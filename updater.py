@@ -8,7 +8,7 @@ ZIP_NAME = r'TickerTracker.zip\b'
 VERSION_STRING = r'\d+\.\d+\.\d+'
 SUBJECT_NAME = fr'TickerTracker-{VERSION_STRING}\.exe\b'
 FIND_FILES = [SELF_NAME, ZIP_NAME, SUBJECT_NAME]
-REPO_URL = 'https://api.github.com/repos/TKeeney25/TickerTracker/releases/latest'
+REPO_URL = 'https://api.github.com/repos/TKeeney25/Update-From-Github/releases/latest'
 
 
 def fetch_local_subject_file_name() -> str:
