@@ -6,16 +6,18 @@ import re
 SELF_NAME = r'TickerTracker.exe'
 ZIP_NAME = r'TickerTracker.zip\b'
 VERSION_STRING = r'\d+\.\d+\.\d+'
+NONE_VERSION = '0.0.0'
 SUBJECT_NAME = fr'TickerTracker-{VERSION_STRING}\.exe\b'
 FIND_FILES = [SELF_NAME, ZIP_NAME, SUBJECT_NAME]
 REPO_URL = 'https://api.github.com/repos/TKeeney25/Update-From-Github/releases/latest'
 
 
-def fetch_local_subject_file_name() -> str:
+def fetch_local_subject_file_name() -> str | None:
     local_file_names = os.listdir('./')
     for file_name in local_file_names:
         if re.match(SUBJECT_NAME, file_name, re.IGNORECASE):
             return file_name
+    return None
 
 
 def fetch_github_content() -> dict:
@@ -54,6 +56,8 @@ def download_file(file_name: str, download_link: str):
 
 def update():
     subject_file = fetch_local_subject_file_name()
+    if subject_file is None:
+        subject_file = NONE_VERSION
     github_content = fetch_github_content()
     github_self_file, github_self_download_link = github_content[SELF_NAME]
     github_zip_file, github_zip_download_link = github_content[ZIP_NAME]
@@ -61,7 +65,8 @@ def update():
     try_delete_old_file(github_self_file)
     if version_greater_than(fetch_file_version(github_subject_file), fetch_file_version(subject_file)):
         download_file(github_subject_file, github_subject_download_link)
-        os.remove(f'./{subject_file}')
+        if subject_file != NONE_VERSION:
+            os.remove(f'./{subject_file}')
         download_file(github_zip_file, github_zip_download_link)
         unzip(github_zip_file)
         download_file(github_self_file + '1', github_self_download_link)
